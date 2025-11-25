@@ -14,6 +14,13 @@
     <input type="file" id="importInput" accept=".json" style="display: none" />
 
     <div class="container">
+      <!-- Main Tabs -->
+      <div class="main-tabs" id="mainTabs">
+        <button class="main-tab active" data-type="kaomoji">顏文字</button>
+        <button class="main-tab" data-type="symbols">符號</button>
+        <button class="main-tab" data-type="emoji">Emoji</button>
+      </div>
+
       <!-- Header -->
       <div class="header">
         <div class="random-wrapper">
@@ -49,7 +56,6 @@
             <button id="infoBtn" class="btn-icon" title="關於">
               <i class="fa-solid fa-circle-info"></i>
             </button>
-            <div class="stats-info">總數：<span id="totalCount">0</span></div>
           </div>
 
           <div class="action-buttons">
@@ -137,6 +143,8 @@
 
     <!-- 假設你的資料檔路徑是正確的 -->
     <script src="../data/kaomoji-data.js"></script>
+    <script src="../data/symbols-data.js"></script>
+    <script src="../data/emoji-data.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

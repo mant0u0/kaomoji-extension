@@ -1,8 +1,9 @@
 class KaomojiExtension {
   constructor() {
-    this.currentCategory = 'all'
+    this.currentType = 'kaomoji'
+    this.currentCategory = 'recent'
     this.searchTerm = ''
-    this.recentHistory = []
+    this.history = { kaomoji: [], symbols: [], emoji: [] }
     this.customKaomoji = {}
     this.maxHistorySize = 40
     this.currentEditTarget = null
@@ -13,19 +14,26 @@ class KaomojiExtension {
     this.applyTheme()
     await this.loadData()
     this.setupRandomHeader()
+
+    // Set active main tab
+    document.querySelectorAll('.main-tab').forEach((t) => {
+      t.classList.toggle('active', t.dataset.type === this.currentType)
+    })
+    this.updateUIForType()
+
     this.generateCategoryTabs()
     this.renderKaomoji()
     this.bindEvents()
-    this.updateStats()
   }
 
   applyTheme() {
-    const randomHue = Math.floor(Math.random() * 360)
-    document.documentElement.style.setProperty('--hue', randomHue)
+    // Default to Kaomoji theme
+    document.documentElement.style.setProperty('--hue', '210')
   }
 
   setupRandomHeader() {
     const display = document.getElementById('randomDisplay')
+    const wrapper = document.querySelector('.random-wrapper') // Get wrapper
     const copyBtn = document.getElementById('copyRandomBtn')
 
     const updateRandom = () => {
@@ -43,7 +51,15 @@ class KaomojiExtension {
 
     updateRandom()
 
-    display.addEventListener('click', updateRandom)
+    // Move click event to wrapper
+    if (wrapper) {
+      wrapper.addEventListener('click', (e) => {
+        // Prevent triggering if clicking copy button
+        if (e.target.closest('.copy-random-btn')) return
+        updateRandom()
+      })
+    }
+
     copyBtn.addEventListener('click', async (e) => {
       e.stopPropagation()
       await this.handleClick(display.textContent)
@@ -52,52 +68,97 @@ class KaomojiExtension {
 
   async loadData() {
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-      const result = await chrome.storage.local.get(['kaomojiHistory', 'customKaomoji'])
-      this.recentHistory = result.kaomojiHistory || []
+      const result = await chrome.storage.local.get(['history', 'kaomojiHistory', 'customKaomoji', 'lastState'])
       this.customKaomoji = result.customKaomoji || {}
+
+      if (result.history) {
+        this.history = result.history
+      } else if (result.kaomojiHistory) {
+        // Migration
+        this.history.kaomoji = result.kaomojiHistory
+      }
+
+      if (result.lastState) {
+        this.currentType = result.lastState.type || 'kaomoji'
+        this.currentCategory = result.lastState.category || 'recent'
+      }
     } else {
-      const hist = localStorage.getItem('kaomojiHistory')
+      const hist = localStorage.getItem('history')
+      const oldHist = localStorage.getItem('kaomojiHistory')
       const cust = localStorage.getItem('customKaomoji')
-      this.recentHistory = hist ? JSON.parse(hist) : []
+      const state = localStorage.getItem('lastState')
+
       this.customKaomoji = cust ? JSON.parse(cust) : {}
+
+      if (hist) {
+        this.history = JSON.parse(hist)
+      } else if (oldHist) {
+        this.history.kaomoji = JSON.parse(oldHist)
+      }
+
+      if (state) {
+        const parsed = JSON.parse(state)
+        this.currentType = parsed.type || 'kaomoji'
+        this.currentCategory = parsed.category || 'recent'
+      }
+    }
+
+    // Ensure structure integrity
+    if (!this.history.kaomoji) this.history.kaomoji = []
+    if (!this.history.symbols) this.history.symbols = []
+    if (!this.history.emoji) this.history.emoji = []
+  }
+
+  async saveState() {
+    const state = { type: this.currentType, category: this.currentCategory }
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      await chrome.storage.local.set({ lastState: state })
+    } else {
+      localStorage.setItem('lastState', JSON.stringify(state))
     }
   }
 
   async saveData() {
-    const data = { kaomojiHistory: this.recentHistory, customKaomoji: this.customKaomoji }
+    const data = { history: this.history, customKaomoji: this.customKaomoji }
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       await chrome.storage.local.set(data)
     } else {
-      localStorage.setItem('kaomojiHistory', JSON.stringify(this.recentHistory))
+      localStorage.setItem('history', JSON.stringify(this.history))
       localStorage.setItem('customKaomoji', JSON.stringify(this.customKaomoji))
     }
-  }
-
-  // 取得合併資料 (預設+自訂)
+  } // 取得合併資料 (預設+自訂)
   getAllData() {
-    // 假設 defaultKaomojiData 來自於 kaomoji-data.js
-    const combined = typeof defaultKaomojiData !== 'undefined' ? JSON.parse(JSON.stringify(defaultKaomojiData)) : {}
+    let combined = {}
 
-    Object.keys(this.customKaomoji).forEach((cat) => {
-      if (!combined[cat]) combined[cat] = { categoryTags: [cat], items: [] }
+    if (this.currentType === 'kaomoji') {
+      combined = typeof defaultKaomojiData !== 'undefined' ? JSON.parse(JSON.stringify(defaultKaomojiData)) : {}
 
-      // 避免重複加入
-      const existing = new Set(combined[cat].items.map((i) => i.symbol))
-      this.customKaomoji[cat].items.forEach((item) => {
-        if (!existing.has(item.symbol)) {
-          // 加入 sourceCategory 方便反查
-          combined[cat].items.push({ ...item, isCustom: true, sourceCategory: cat })
-        }
+      Object.keys(this.customKaomoji).forEach((cat) => {
+        if (!combined[cat]) combined[cat] = { categoryTags: [cat], items: [] }
+
+        // 避免重複加入
+        const existing = new Set(combined[cat].items.map((i) => i.symbol))
+        this.customKaomoji[cat].items.forEach((item) => {
+          if (!existing.has(item.symbol)) {
+            // 加入 sourceCategory 方便反查
+            combined[cat].items.push({ ...item, isCustom: true, sourceCategory: cat })
+          }
+        })
       })
-    })
+    } else if (this.currentType === 'symbols') {
+      combined = typeof defaultSymbolsData !== 'undefined' ? JSON.parse(JSON.stringify(defaultSymbolsData)) : {}
+    } else if (this.currentType === 'emoji') {
+      combined = typeof defaultEmojiData !== 'undefined' ? JSON.parse(JSON.stringify(defaultEmojiData)) : {}
+    }
+
     return combined
   }
 
   exportData() {
     const exportObj = {
-      version: 1,
+      version: 2,
       date: new Date().toISOString(),
-      history: this.recentHistory,
+      history: this.history,
       custom: this.customKaomoji,
     }
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(exportObj, null, 2))
@@ -117,12 +178,29 @@ class KaomojiExtension {
         const data = JSON.parse(e.target.result)
         if (!data.history && !data.custom) throw new Error('無效的備份檔')
         if (confirm(`確定要匯入嗎？`)) {
-          const oldHistSym = new Set(this.recentHistory.map((h) => h.symbol))
-          ;(data.history || []).forEach((h) => {
-            if (!oldHistSym.has(h.symbol)) this.recentHistory.push(h)
-          })
-          this.recentHistory.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
-          this.recentHistory = this.recentHistory.slice(0, this.maxHistorySize)
+          // Handle history import
+          if (Array.isArray(data.history)) {
+            // Old version backup (only kaomoji)
+            const oldHistSym = new Set(this.history.kaomoji.map((h) => h.symbol))
+            data.history.forEach((h) => {
+              if (!oldHistSym.has(h.symbol)) this.history.kaomoji.push(h)
+            })
+            this.history.kaomoji.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+            this.history.kaomoji = this.history.kaomoji.slice(0, this.maxHistorySize)
+          } else if (data.history) {
+            // New version backup
+            ;['kaomoji', 'symbols', 'emoji'].forEach((type) => {
+              if (data.history[type]) {
+                const currentSyms = new Set(this.history[type].map((h) => h.symbol))
+                data.history[type].forEach((h) => {
+                  if (!currentSyms.has(h.symbol)) this.history[type].push(h)
+                })
+                this.history[type].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+                this.history[type] = this.history[type].slice(0, this.maxHistorySize)
+              }
+            })
+          }
+
           if (data.custom) {
             Object.keys(data.custom).forEach((cat) => {
               if (!this.customKaomoji[cat]) this.customKaomoji[cat] = data.custom[cat]
@@ -138,7 +216,6 @@ class KaomojiExtension {
           await this.saveData()
           this.generateCategoryTabs()
           this.renderKaomoji()
-          this.updateStats()
           alert('匯入成功！')
         }
       } catch (err) {
@@ -151,18 +228,26 @@ class KaomojiExtension {
   generateCategoryTabs() {
     const tabsContainer = document.getElementById('categoryTabs')
     const allData = this.getAllData()
+
+    const isActive = (cat) => (this.currentCategory === cat ? 'active' : '')
+
     let html = `
-            <button class="tab-btn" data-cat="recent"><i class="fa-solid fa-clock-rotate-left"></i> 紀錄</button>
-            <button class="tab-btn active" data-cat="all"><i class="fa-solid fa-layer-group"></i> 全部</button>
-            <button class="tab-btn" data-cat="custom"><i class="fa-solid fa-user-pen"></i> 自訂</button>
+            <button class="tab-btn ${isActive(
+              'recent'
+            )}" data-cat="recent"><i class="fa-solid fa-clock-rotate-left"></i> 常用</button>
         `
+
+    if (this.currentType === 'kaomoji') {
+      html += `<button class="tab-btn ${isActive(
+        'custom'
+      )}" data-cat="custom"><i class="fa-solid fa-user-pen"></i> 自訂</button>`
+    }
+
     Object.keys(allData).forEach((cat) => {
-      html += `<button class="tab-btn" data-cat="${cat}">${cat}</button>`
+      html += `<button class="tab-btn ${isActive(cat)}" data-cat="${cat}">${cat}</button>`
     })
     tabsContainer.innerHTML = html
-  }
-
-  // --- 關鍵修正部分 ---
+  } // --- 關鍵修正部分 ---
   renderKaomoji() {
     const grid = document.getElementById('kaomojiGrid')
     let items = []
@@ -170,9 +255,7 @@ class KaomojiExtension {
 
     // 1. 決定基礎資料池
     if (this.currentCategory === 'recent') {
-      items = [...this.recentHistory]
-    } else if (this.currentCategory === 'all') {
-      Object.values(allData).forEach((cat) => items.push(...cat.items))
+      items = [...this.history[this.currentType]]
     } else if (this.currentCategory === 'custom') {
       // 修正：遍歷原始自訂資料並手動補上 metadata (isCustom, sourceCategory)
       Object.entries(this.customKaomoji).forEach(([catKey, catData]) => {
@@ -192,35 +275,33 @@ class KaomojiExtension {
     if (this.searchTerm) {
       const term = this.searchTerm.trim().toLowerCase()
       if (term.length > 0) {
-        let searchPool = items
+        let results = []
 
-        // 搜尋模式擴大範圍
-        if (['recent', 'all', 'custom'].includes(this.currentCategory)) {
-          searchPool = []
-          Object.values(allData).forEach((cat) => searchPool.push(...cat.items))
-        }
+        // 全域搜尋，確保能搜尋到分類標籤
+        Object.entries(allData).forEach(([catName, catData]) => {
+          const catTags = catData.categoryTags || []
+          const isCatMatch =
+            catName.toLowerCase().includes(term) || catTags.some((t) => t && t.toLowerCase().includes(term))
 
-        const matchingCats = Object.keys(allData).filter((key) => {
-          const catData = allData[key]
-          if (key.toLowerCase().includes(term)) return true
-          if (catData.categoryTags && catData.categoryTags.some((t) => t && t.toLowerCase().includes(term))) return true
-          return false
+          catData.items.forEach((item) => {
+            const itemTags = item.tags || []
+            const isItemMatch =
+              item.symbol.toLowerCase().includes(term) ||
+              itemTags.some((t) => t && String(t).toLowerCase().includes(term))
+
+            if (isCatMatch || isItemMatch) {
+              // 複製物件以附加資訊，避免修改原始資料
+              const resultItem = { ...item }
+              // 如果沒有來源分類，補上目前遍歷到的分類
+              if (!resultItem.sourceCategory) {
+                resultItem.sourceCategory = catName
+              }
+              results.push(resultItem)
+            }
+          })
         })
 
-        items = searchPool.filter((item) => {
-          if (item.symbol.toLowerCase().includes(term)) return true
-          const itemTags = Array.isArray(item.tags) ? item.tags : []
-          if (itemTags.some((t) => t && String(t).toLowerCase().includes(term))) return true
-
-          // 嘗試找出分類，優先使用 metadata 中的 sourceCategory
-          const itemCatKey =
-            item.sourceCategory ||
-            Object.keys(allData).find((cat) => allData[cat].items.some((i) => i.symbol === item.symbol))
-          if (itemCatKey && matchingCats.includes(itemCatKey)) return true
-          return false
-        })
-
-        items = [...new Map(items.map((item) => [item.symbol, item])).values()]
+        items = [...new Map(results.map((item) => [item.symbol, item])).values()]
       }
     }
 
@@ -236,6 +317,11 @@ class KaomojiExtension {
       const el = document.createElement('div')
       el.className = 'kaomoji-item'
       el.dataset.symbol = item.symbol
+
+      // Add tooltip if tags exist
+      if (item.tags && item.tags.length > 0) {
+        el.title = item.tags.join(', ')
+      }
 
       let badgeHtml = ''
       if (this.currentCategory !== 'custom' && item.isCustom) badgeHtml = '<span class="badge badge-custom"></span>'
@@ -279,7 +365,7 @@ class KaomojiExtension {
   }
 
   isRecent(symbol) {
-    return this.recentHistory.some((i) => i.symbol === symbol)
+    return this.history[this.currentType].some((i) => i.symbol === symbol)
   }
 
   async handleClick(symbol) {
@@ -289,9 +375,10 @@ class KaomojiExtension {
     setTimeout(() => msg.classList.remove('show'), 1500)
 
     // 更新 Recent
-    this.recentHistory = this.recentHistory.filter((i) => i.symbol !== symbol)
-    this.recentHistory.unshift({ symbol, count: 1, timestamp: Date.now() })
-    this.recentHistory = this.recentHistory.slice(0, this.maxHistorySize)
+    let currentHistory = this.history[this.currentType]
+    currentHistory = currentHistory.filter((i) => i.symbol !== symbol)
+    currentHistory.unshift({ symbol, count: 1, timestamp: Date.now() })
+    this.history[this.currentType] = currentHistory.slice(0, this.maxHistorySize)
     await this.saveData()
 
     // 如果在 Recent 分頁，重新渲染
@@ -377,12 +464,67 @@ class KaomojiExtension {
     if (autoSave) await this.saveData()
   }
 
-  updateStats() {
-    const total = Object.values(this.getAllData()).reduce((acc, cat) => acc + cat.items.length, 0)
-    document.getElementById('totalCount').innerText = total
+  getRandomHue() {
+    // Curated list of nice colors
+    const hues = [
+      210, // Blue
+      260, // Purple
+      330, // Pink
+      170, // Teal
+      200, // Light Blue
+      280, // Violet
+      350, // Red-Pink
+      190, // Cyan
+    ]
+    return hues[Math.floor(Math.random() * hues.length)]
+  }
+
+  updateUIForType() {
+    const addBtn = document.getElementById('addKaomoji')
+    const grid = document.getElementById('kaomojiGrid')
+
+    if (this.currentType === 'kaomoji') {
+      // Use random hue from palette for Kaomoji
+      const hue = this.getRandomHue()
+      document.documentElement.style.setProperty('--hue', hue)
+      addBtn.style.display = 'inline-flex'
+      grid.classList.remove('square-mode')
+    } else if (this.currentType === 'symbols') {
+      document.documentElement.style.setProperty('--hue', '150') // Green
+      addBtn.style.display = 'none'
+      grid.classList.add('square-mode')
+    } else if (this.currentType === 'emoji') {
+      document.documentElement.style.setProperty('--hue', '30') // Orange
+      addBtn.style.display = 'none'
+      grid.classList.add('square-mode')
+    }
   }
 
   bindEvents() {
+    // Main Tabs
+    const mainTabs = document.querySelectorAll('.main-tab')
+    mainTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        mainTabs.forEach((t) => t.classList.remove('active'))
+        tab.classList.add('active')
+        this.currentType = tab.dataset.type
+        this.currentCategory = 'recent'
+        this.searchTerm = ''
+        document.getElementById('searchInput').value = ''
+        document.getElementById('categoryWrapper').classList.remove('hidden')
+
+        this.updateUIForType()
+
+        this.generateCategoryTabs()
+        this.renderKaomoji()
+        this.saveState()
+
+        // Update random header
+        const display = document.getElementById('randomDisplay')
+        if (display) display.click()
+      })
+    })
+
     const modal = document.getElementById('addModal')
     const closeModal = () => (modal.style.display = 'none')
     document.getElementById('closeModal').onclick = closeModal
@@ -411,7 +553,6 @@ class KaomojiExtension {
 
         this.generateCategoryTabs()
         this.renderKaomoji()
-        this.updateStats()
         closeModal()
       } catch (err) {
         alert(err.message)
@@ -424,7 +565,6 @@ class KaomojiExtension {
         await this.handleDelete(this.currentEditTarget.symbol, this.currentEditTarget.category)
         this.generateCategoryTabs()
         this.renderKaomoji()
-        this.updateStats()
         closeModal()
       }
     })
@@ -445,6 +585,7 @@ class KaomojiExtension {
         document.getElementById('searchInput').value = ''
         document.getElementById('categoryWrapper').classList.remove('hidden')
         this.renderKaomoji()
+        this.saveState()
       }
     })
 
@@ -470,7 +611,7 @@ class KaomojiExtension {
 
     document.getElementById('clearHistory').addEventListener('click', async () => {
       if (confirm('清除紀錄？')) {
-        this.recentHistory = []
+        this.history[this.currentType] = []
         await this.saveData()
         this.renderKaomoji()
       }

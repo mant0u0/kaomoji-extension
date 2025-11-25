@@ -13,6 +13,17 @@
     --r-sm: 4px; --r-md: 8px; --r-lg: 12px;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-body: #1a1a1a;
+        --bg-white: #2d2d2d;
+        --text-main: #ecf0f1;
+        --text-sub: #bdc3c7;
+        --border: #404040;
+        --primary-light: hsl(var(--hue), 30%, 25%);
+    }
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -30,10 +41,51 @@ body {
 
 .hidden { display: none !important; }
 
+/* Main Tabs */
+.main-tabs {
+    display: flex;
+    background: var(--primary-dark);
+    padding: 0 var(--s-2);
+}
+
+.main-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: var(--s-2) 0;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.main-tab:hover {
+    color: #fff;
+}
+
+.main-tab.active {
+    color: #fff;
+}
+
+.main-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    border-radius: 3px 3px 0 0;
+}
+
 /* Header */
 .header {
     background: var(--primary);
     padding: var(--s-4);
+    padding-top: var(--s-2);
     color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border-bottom: 1px solid #00000021;
@@ -47,6 +99,7 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
+        cursor: pointer; /* Make wrapper clickable */
 
         &:hover .copy-random-btn {
             opacity: 1;
@@ -57,7 +110,7 @@ body {
     & .random-kaomoji {
         text-align: center;
         font-size: 24px;
-        cursor: pointer;
+        /* cursor: pointer; Removed from here */
         opacity: 0.9;
         min-height: 36px;
         line-height: 36px;
@@ -68,6 +121,7 @@ body {
         max-width: 80%; 
         /* 禁止選取 */
         user-select: none;
+        width: 100%; /* Fill width */
         
         &:hover { opacity: 1; }
         &.animate { animation: popScale 0.2s ease-out; }
@@ -106,7 +160,7 @@ body {
         & input {
             width: 100%; padding: var(--s-2) var(--s-5) var(--s-2) 32px;
             border: none; border-radius: var(--r-md); background: rgba(255, 255, 255, 0.95);
-            font-family: inherit; font-weight: 700; color: var(--text-main); outline: none; height: 32px;
+            font-family: inherit; font-weight: 700; color: #2c3e50; outline: none; height: 32px;
             &::placeholder { color: #aab7b8; font-weight: 500; }
             &:focus { background: #fff; }
         }
@@ -132,7 +186,7 @@ body {
         padding: var(--s-1) var(--s-2); border-radius: var(--r-sm); background: var(--bg-body);
         border: 1px solid transparent; cursor: pointer; font-size: 12px; color: var(--text-sub);
         font-weight: 700; font-family: inherit; transition: 0.2s;
-        &:hover { background: #ecf0f1; color: var(--text-main); }
+        &:hover { background: #ecf0f1; color: var(--primary-dark); }
         &.active { background: var(--primary-light); color: var(--primary-dark); border-color: transparent; }
     }
 }
@@ -186,17 +240,13 @@ body {
 
     & .copy-message {
         position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
-        background: var(--text-main); color: #fff; padding: var(--s-1) var(--s-3);
+        background: var(--text-main); color: var(--bg-white); padding: var(--s-1) var(--s-3);
         border-radius: var(--r-md); font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 0.2s;
         &.show { opacity: 1; }
     }
 
     & .footer-controls {
         display: flex; justify-content: space-between; align-items: center;
-        & .stats-info { font-size: 12px; color: var(--text-sub); font-weight: 700;
-          padding-left: var(--s-1);
-          padding-right: var(--s-2);
-        }
     }
     & .action-buttons { display: flex; gap: var(--s-2); align-items: center; }
 }
@@ -256,6 +306,7 @@ body {
     }
     & .modal-body {
         padding: var(--s-4);
+        
         & .form-group {
             margin-bottom: var(--s-3);
             & label { display: block; margin-bottom: var(--s-1); font-size: 12px; color: var(--text-main); }
@@ -263,7 +314,8 @@ body {
                 min-width: 100%; 
                 max-height: 150px;
                 
-                padding: var(--s-2); border: 1px solid #dfe6e9; border-radius: var(--r-sm);
+                padding: var(--s-2); border: 1px solid var(--border); border-radius: var(--r-sm);
+                background: var(--bg-body); color: var(--text-main);
                 
                 font-family: inherit; font-size: 13px; outline: none; margin-top: var(--s-1);
 
@@ -278,3 +330,16 @@ body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: #ced6e0; border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: #b2bec3; }
+
+/* Square Mode for Symbols and Emoji */
+.kaomoji-grid.square-mode .kaomoji-item {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.kaomoji-grid.square-mode .kaomoji-item .kaomoji-symbol {
+    font-size: 20px;
+}

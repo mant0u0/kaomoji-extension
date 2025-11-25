@@ -1,5 +1,5 @@
 const defaultEmojiData = {
-  表情符號: {
+  表情: {
     categoryTags: ['表情符號'],
     items: [
       { symbol: '😀', tags: ['笑臉', '笑', 'Smile', 'Happy'] },
@@ -345,8 +345,8 @@ const defaultEmojiData = {
       { symbol: '🤍', tags: ['白色愛心', 'White Heart'] },
     ],
   },
-  動物與植物: {
-    categoryTags: ['動物', '植物'],
+  動物: {
+    categoryTags: ['動物'],
     items: [
       { symbol: '🐵', tags: ['猴子頭', 'Monkey Face'] },
       { symbol: '🐒', tags: ['猴子', 'Monkey'] },
@@ -473,6 +473,12 @@ const defaultEmojiData = {
       { symbol: '🪰', tags: ['蒼蠅', 'Fly'] },
       { symbol: '🪱', tags: ['蠕蟲', 'Worm'] },
       { symbol: '🦠', tags: ['微生物', 'Microbe'] },
+    ],
+  },
+
+  植物: {
+    categoryTags: ['植物'],
+    items: [
       { symbol: '💐', tags: ['花束', 'Bouquet'] },
       { symbol: '🌸', tags: ['櫻花', 'Cherry Blossom'] },
       { symbol: '💮', tags: ['白花', 'White Flower'] },
@@ -503,8 +509,8 @@ const defaultEmojiData = {
       { symbol: '🍄', tags: ['蘑菇', 'Mushroom'] },
     ],
   },
-  美食與飲料: {
-    categoryTags: ['美食', '飲料'],
+  食物: {
+    categoryTags: ['美食', '飲料', '食物'],
     items: [
       { symbol: '🍇', tags: ['葡萄', 'Grapes'] },
       { symbol: '🍈', tags: ['瓜', 'Melon'] },
@@ -985,7 +991,7 @@ const defaultEmojiData = {
       { symbol: '🧘‍♀️', tags: ['盤坐女子', 'Woman In Lotus Position'] },
     ],
   },
-  旅遊與地標: {
+  地標: {
     categoryTags: ['旅遊', '地標'],
     items: [
       { symbol: '🌍', tags: ['歐洲及非洲', '地球', 'Earth Europe Africa'] },

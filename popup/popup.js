@@ -234,13 +234,13 @@ class KaomojiExtension {
     let html = `
             <button class="tab-btn ${isActive(
               'recent'
-            )}" data-cat="recent"><i class="fa-solid fa-clock-rotate-left"></i> 常用</button>
+            )}" data-cat="recent"><i class="fa-solid fa-star"></i> 常用</button>
         `
 
     if (this.currentType === 'kaomoji') {
       html += `<button class="tab-btn ${isActive(
         'custom'
-      )}" data-cat="custom"><i class="fa-solid fa-user-pen"></i> 自訂</button>`
+      )}" data-cat="custom"><i class="fa-solid fa-pen"></i> 自訂</button>`
     }
 
     Object.keys(allData).forEach((cat) => {
@@ -307,7 +307,24 @@ class KaomojiExtension {
 
     // 3. 渲染
     if (items.length === 0) {
-      grid.innerHTML = `<div style="width:100%;text-align:center;padding:40px;color:#bdc3c7;">沒有找到顏文字</div>`
+      const randomIcons = [
+        'fa-solid fa-poo',
+        'fa-solid fa-kiwi-bird',
+        'fa-solid fa-seedling',
+        'fa-solid fa-leaf',
+        'fa-solid fa-cat',
+        'fa-solid fa-dog',
+        'fa-solid fa-fish',
+        'fa-solid fa-dove',
+        'fa-solid fa-spider',
+        'fa-solid fa-bug',
+      ]
+      const randomIcon = randomIcons[Math.floor(Math.random() * randomIcons.length)]
+
+      grid.innerHTML = `<div style="width:100%;text-align:center;padding:40px;color:#bdc3c7;">
+      <i class="${randomIcon}" style="font-size:48px;margin-bottom:16px;display:block;"></i>
+      目前沒有東西喔！
+      </div>`
       return
     }
 

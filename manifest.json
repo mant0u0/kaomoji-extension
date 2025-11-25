@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "顏文字複製工具",
+  "description": "快速複製各種可愛的顏文字表情 (๑˃̵ᴗ˂̵)و",
+  "version": "1.0.0",
+  "icons": {
+    "16": "logo/logo-16.png",
+    "48": "logo/logo-48.png",
+    "128": "logo/logo-128.png"
+  },
+  "action": {
+    "default_title": "顏文字複製工具",
+    "default_popup": "popup/popup.html"
+  },
+  "permissions": ["clipboardWrite", "storage"]
+}

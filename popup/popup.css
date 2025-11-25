@@ -300,6 +300,7 @@ body {
     min-height: 40px;
     flex: 0 0 auto;
     width: auto;
+    overflow: hidden;
 
     &:hover {
       border-color: var(--primary);

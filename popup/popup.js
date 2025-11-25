@@ -579,6 +579,7 @@ class KaomojiExtension {
       document.documentElement.style.setProperty("--hue", hue);
       addBtn.style.display = "inline-flex";
       grid.classList.remove("square-mode");
+      grid.classList.remove("emoji-mode");
     } else if (this.currentType === "symbols") {
       document.documentElement.style.setProperty("--hue", "150"); // Green
       addBtn.style.display = "none";

@@ -5,8 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="popup.css" />
     <title>顏文字小工具</title>
   </head>
@@ -24,7 +34,9 @@
       <!-- Header -->
       <div class="header">
         <div class="random-wrapper">
-          <div id="randomDisplay" class="random-kaomoji" title="點擊切換">Loading...</div>
+          <div id="randomDisplay" class="random-kaomoji" title="點擊切換">
+            Loading...
+          </div>
           <button id="copyRandomBtn" class="copy-random-btn" title="複製">
             <i class="fa-regular fa-copy"></i>
           </button>
@@ -49,7 +61,9 @@
 
       <!-- Footer -->
       <div class="footer">
-        <div id="copyMessage" class="copy-message"><i class="fa-solid fa-check"></i> 已複製</div>
+        <div id="copyMessage" class="copy-message">
+          <i class="fa-solid fa-check"></i> 已複製
+        </div>
 
         <div class="footer-controls">
           <div class="btn-group">
@@ -60,7 +74,11 @@
 
           <div class="action-buttons">
             <div class="btn-group">
-              <button id="clearHistory" class="btn-icon danger" title="清除紀錄">
+              <button
+                id="clearHistory"
+                class="btn-icon danger"
+                title="清除紀錄"
+              >
                 <i class="fa-solid fa-trash-can"></i>
               </button>
               <button id="importBtn" class="btn-icon" title="匯入">
@@ -70,7 +88,9 @@
                 <i class="fa-solid fa-file-export"></i>
               </button>
             </div>
-            <button id="addKaomoji" class="btn-pill primary" title="新增"><i class="fa-solid fa-plus"></i> 新增</button>
+            <button id="addKaomoji" class="btn-pill primary" title="新增">
+              <i class="fa-solid fa-plus"></i> 新增
+            </button>
           </div>
         </div>
       </div>
@@ -80,13 +100,21 @@
     <div id="addModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 id="modalTitle"><i class="fa-solid fa-pen-to-square"></i> 新增顏文字</h3>
-          <button class="close-btn" id="closeModal"><i class="fa-solid fa-xmark"></i></button>
+          <h3 id="modalTitle">
+            <i class="fa-solid fa-pen-to-square"></i> 新增顏文字
+          </h3>
+          <button class="close-btn" id="closeModal">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
         <div class="modal-body">
           <div class="form-group">
             <label>顏文字符號</label>
-            <textarea id="kaomojiSymbol" placeholder="( ˘•ω•˘ )" rows="2"></textarea>
+            <textarea
+              id="kaomojiSymbol"
+              placeholder="( ˘•ω•˘ )"
+              rows="2"
+            ></textarea>
           </div>
           <div class="form-group">
             <label>分類</label>
@@ -95,7 +123,12 @@
                 <option value="">選擇分類</option>
               </select>
             </div>
-            <input type="text" id="newCategory" placeholder="輸入新分類名稱..." style="display: none" />
+            <input
+              type="text"
+              id="newCategory"
+              placeholder="輸入新分類名稱..."
+              style="display: none"
+            />
           </div>
           <div class="form-group">
             <label>標籤</label>
@@ -103,7 +136,11 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button id="deleteBtn" class="btn-pill danger" style="display: none; margin-right: auto">
+          <button
+            id="deleteBtn"
+            class="btn-pill danger"
+            style="display: none; margin-right: auto"
+          >
             <i class="fa-solid fa-trash"></i> 刪除
           </button>
           <button id="cancelAdd" class="btn-pill secondary">取消</button>
@@ -117,11 +154,23 @@
       <div class="modal-content">
         <div class="modal-header">
           <h3><i class="fa-solid fa-circle-info"></i> 關於</h3>
-          <button class="close-btn" id="closeAbout"><i class="fa-solid fa-xmark"></i></button>
+          <button class="close-btn" id="closeAbout">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
         <div class="modal-body" style="text-align: center">
           <h2 style="font-size: 18px; margin-bottom: 2px">饅頭顏文字小工具</h2>
-          <p style="color: var(--text-sub); font-size: 12px; margin-bottom: 16px">作者：Mant0u</p>
+          <p
+            style="color: var(--text-sub); font-size: 12px; margin-bottom: 16px"
+          >
+            作者：Mant0u
+          </p>
+          <p
+            style="color: var(--text-sub); font-size: 12px; margin-bottom: 16px"
+          >
+            AI 工具：Gemini 3 Pro
+          </p>
+
           <div
             style="
               background: var(--bg-body);
@@ -132,10 +181,10 @@
               line-height: 1.6;
             "
           >
-            <p>這是一個簡單好用的顏文字管理工具。</p>
-            <p>• 點擊左上角編輯自訂顏文字</p>
-            <p>• 點擊上方隨機顏文字可切換，右側按鈕可複製</p>
-            <p>• 支援匯出與匯入備份</p>
+            <p>這是一個簡單的顏文字與符號的管理工具。</p>
+            <p>• 可以點選下方分類切換</p>
+            <p>• 點擊顏文字按鈕即可複製</p>
+            <p>• 支援自訂顏文字，可將記錄匯出與匯入</p>
           </div>
         </div>
       </div>

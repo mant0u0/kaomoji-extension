@@ -1,8 +1,8 @@
-<div align="center">
-    <h1>饅頭顏文字小工具 (Kaomoji Extension)</h1>
-    <p>快速複製各種可愛的顏文字表情符號與 Emoji！</p>
-    <p>一個簡單好用的 Chrome 擴充功能，支援深色模式與自訂功能！</p>
-</div>
+# 饅頭顏文字小工具 (Kaomoji Extension)
+
+快速複製各種可愛的顏文字表情符號與 Emoji！  
+一個簡單好用的 Chrome 擴充功能，支援深色模式與自訂功能！  
+![Logo](logo/kaomoji-128.png)
 
 ## 功能說明
 
@@ -59,16 +59,6 @@
 1. 點擊右下角的「匯出」按鈕下載 `.json` 備份檔。
 2. 在新電腦或重新安裝時，點擊「匯入」按鈕並選擇備份檔即可還原。
 
-## 技術資訊
-
-- **Manifest Version**: 3
-- **權限需求**:
-  - `storage` - 儲存使用者設定、常用紀錄與自訂內容
-- **核心技術**:
-  - Vanilla JavaScript (無框架)
-  - CSS Variables (支援動態主題)
-  - Chrome Storage API
-
 ### 專案結構
 
 ```
@@ -89,15 +79,3 @@ kaomoji-extension/
 ## 授權
 
 本專案基於 MIT License 授權。
-
-## 貢獻
-
-歡迎提出 Issue 或 Pull Request！
-如果你有想要新增的顏文字或功能建議，請隨時告訴我。
-
----
-
-<div align="center">
-    <p>如果這個工具對你有幫助，請給個 ⭐️ 吧！</p>
-    <p>Made with ❤️ by Mant0u</p>
-</div>

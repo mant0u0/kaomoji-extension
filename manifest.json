@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "饅頭顏文字小工具",
+  "name": "顏文字小工具",
   "description": "快速複製各種可愛的顏文字表情符號與 Emoji！",
   "version": "1.0.0",
   "icons": {
@@ -9,7 +9,7 @@
     "128": "logo/logo-128.png"
   },
   "action": {
-    "default_title": "饅頭顏文字小工具",
+    "default_title": "顏文字小工具",
     "default_popup": "popup/popup.html"
   },
   "permissions": ["clipboardWrite", "storage"]

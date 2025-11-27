@@ -1,7 +1,8 @@
 # 顏文字小工具 (Kaomoji Extension)
 
 快速複製各種可愛的顏文字表情符號與 Emoji！  
-一個簡單好用的 Chrome 擴充功能，支援深色模式與自訂功能！  
+一個簡單好用的 Chrome 擴充功能，支援深色模式與自訂功能！
+
 ![Logo](logo/main.png)
 
 ## 功能說明

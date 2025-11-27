@@ -77,6 +77,13 @@ kaomoji-extension/
 └── README.md             # 說明文件
 ```
 
+## 參考資料
+
+1. Chrome Extension v3 Starter  
+   https://github.com/SimGus/chrome-extension-v3-starter
+2. 豐富的顏文字庫 | 顏文字卡
+   https://facemood.grtimed.com/
+
 ## 授權
 
 本專案基於 MIT License 授權。

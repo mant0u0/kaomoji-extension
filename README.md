@@ -28,7 +28,7 @@
 6. 完成，你應該會在工具列看到顏文字圖示！(ﾉ>ω<)ﾉ    
 
 
-<video src="other/installation-steps.mp4"  controls style="border-radius: 4px"></video>
+<video src="[other/installation-steps.mp4](https://github.com/user-attachments/assets/662a7593-d71b-4638-84cc-59d343f082e4)"  controls style="border-radius: 4px"></video>
 
 ## 使用說明
 

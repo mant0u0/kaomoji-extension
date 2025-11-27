@@ -3,7 +3,7 @@
 快速複製各種可愛的顏文字表情符號與 Emoji！  
 一個簡單好用的 Chrome 擴充功能，支援深色模式與自訂功能！
 
-![Logo](logo/main.png)
+![Logo](logo/app-main.png)
 
 ## 功能說明
 
@@ -81,7 +81,7 @@ kaomoji-extension/
 
 1. Chrome Extension v3 Starter  
    https://github.com/SimGus/chrome-extension-v3-starter
-2. 豐富的顏文字庫 | 顏文字卡
+2. 豐富的顏文字庫 | 顏文字卡  
    https://facemood.grtimed.com/
 
 ## 授權
